@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 
 export default function ProfitCalculator() {
-  const [inputs, setInputs] = useState({
+  const [inputs, setInputs] = useState<Record<string, string | number>>({
     publicPriceMillions: 1,
     warehouseDiscount: 35,
     middlemanPercent: 2,
@@ -29,30 +29,41 @@ export default function ProfitCalculator() {
     const { name, value } = e.target;
     setInputs((prev) => ({
       ...prev,
-      [name]: parseFloat(value) || 0,
+      [name]: value,
     }));
   };
 
+  const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    e.target.select();
+  };
+
   useEffect(() => {
-    const publicPrice = inputs.publicPriceMillions * 1000000;
+    const publicPriceMillions = parseFloat(String(inputs.publicPriceMillions)) || 0;
+    const warehouseDiscount = parseFloat(String(inputs.warehouseDiscount)) || 0;
+    const middlemanPercent = parseFloat(String(inputs.middlemanPercent)) || 0;
+    const financePercent = parseFloat(String(inputs.financePercent)) || 0;
+    const salesCommission = parseFloat(String(inputs.salesCommission)) || 0;
+    const transferFee = parseFloat(String(inputs.transferFee)) || 0;
+
+    const publicPrice = publicPriceMillions * 1000000;
     
     // 1. Cost of goods after warehouse discount
-    const costOfGoods = publicPrice * (1 - inputs.warehouseDiscount / 100);
+    const costOfGoods = publicPrice * (1 - warehouseDiscount / 100);
     
     // 2. Amount paid by finance company
     const financePaid = costOfGoods;
     
     // 3. Amount due to finance company (1 month duration)
-    const financeInterest = financePaid * (inputs.financePercent / 100);
+    const financeInterest = financePaid * (financePercent / 100);
     const financeDue = financePaid + financeInterest;
     
     // 4. Amount collected from warehouse
-    const middlemanTake = publicPrice * (inputs.middlemanPercent / 100);
+    const middlemanTake = publicPrice * (middlemanPercent / 100);
     const collectedFromWarehouse = costOfGoods + middlemanTake;
     
     // Calculate extra fees
-    const salesCommissionAmt = financePaid * (inputs.salesCommission / 100);
-    const transferFeeAmt = financePaid * (inputs.transferFee / 100);
+    const salesCommissionAmt = financePaid * (salesCommission / 100);
+    const transferFeeAmt = financePaid * (transferFee / 100);
     
     // 5. Net Profit
     const netProfit = collectedFromWarehouse - financeDue - salesCommissionAmt - transferFeeAmt;
@@ -117,6 +128,7 @@ export default function ProfitCalculator() {
                     name="publicPriceMillions"
                     value={inputs.publicPriceMillions}
                     onChange={handleInputChange}
+                    onFocus={handleFocus}
                     step="0.1"
                     className="w-full bg-slate-950/70 border border-slate-800 text-emerald-300 font-semibold p-3.5 pl-20 rounded-xl outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 text-base transition-all"
                   />
@@ -133,6 +145,7 @@ export default function ProfitCalculator() {
                     name="warehouseDiscount"
                     value={inputs.warehouseDiscount}
                     onChange={handleInputChange}
+                    onFocus={handleFocus}
                     step="0.1"
                     className="w-full bg-slate-950/70 border border-slate-800 text-white font-semibold p-3.5 pl-12 rounded-xl outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 text-base transition-all"
                   />
@@ -149,6 +162,7 @@ export default function ProfitCalculator() {
                     name="middlemanPercent"
                     value={inputs.middlemanPercent}
                     onChange={handleInputChange}
+                    onFocus={handleFocus}
                     step="0.1"
                     className="w-full bg-slate-950/70 border border-slate-800 text-white font-semibold p-3.5 pl-12 rounded-xl outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 text-base transition-all"
                   />
@@ -165,6 +179,7 @@ export default function ProfitCalculator() {
                     name="financePercent"
                     value={inputs.financePercent}
                     onChange={handleInputChange}
+                    onFocus={handleFocus}
                     step="0.1"
                     className="w-full bg-slate-950/70 border border-slate-800 text-white font-semibold p-3.5 pl-12 rounded-xl outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 text-base transition-all"
                   />
@@ -182,6 +197,7 @@ export default function ProfitCalculator() {
                     value={inputs.salesCommission}
                     step="0.1"
                     onChange={handleInputChange}
+                    onFocus={handleFocus}
                     className="w-full bg-slate-950/70 border border-slate-800 text-white font-semibold p-3.5 pl-12 rounded-xl outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 text-base transition-all"
                   />
                   <span className="absolute left-3.5 text-xs font-semibold text-slate-400 bg-slate-800/80 px-2.5 py-1 rounded-lg">%</span>
@@ -198,6 +214,7 @@ export default function ProfitCalculator() {
                     value={inputs.transferFee}
                     step="0.01"
                     onChange={handleInputChange}
+                    onFocus={handleFocus}
                     className="w-full bg-slate-950/70 border border-slate-800 text-white font-semibold p-3.5 pl-12 rounded-xl outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 text-base transition-all"
                   />
                   <span className="absolute left-3.5 text-xs font-semibold text-slate-400 bg-slate-800/80 px-2.5 py-1 rounded-lg">%</span>
