@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'حاسبة أرباح الوسيط المالي',
-  description: 'حاسبة أرباح الوسيط المالي',
+  title: 'PharmaSky - حاسبة أرباح وساطة التمويل',
+  description: 'حاسبة أرباح وساطة التمويل الدقيقة لفارماسكاي',
 };
 
 export default function RootLayout({
@@ -13,7 +13,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ar" dir="rtl">
-      <body>{children}</body>
+      <body className="font-sans antialiased bg-slate-950 text-slate-100 selection:bg-emerald-500 selection:text-white">
+        {children}
+      </body>
     </html>
   );
 }
