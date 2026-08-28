@@ -69,7 +69,14 @@ export default function ProfitCalculator() {
   }, [inputs]);
 
   return (
-    <div dir="rtl" className="min-h-screen bg-slate-900 text-slate-100 flex justify-center items-center p-8 font-sans" style={{ fontFamily: "'Tajawal', sans-serif", backgroundImage: "radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.15) 0px, transparent 50%)" }}>
+    <div dir="rtl" className="min-h-screen bg-slate-900 text-slate-100 flex flex-col justify-center items-center p-4 md:p-8 font-sans" style={{ fontFamily: "'Tajawal', sans-serif", backgroundImage: "radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.15) 0px, transparent 50%)" }}>
+      
+      {/* Header Logo */}
+      <div className="mb-8 flex flex-col items-center justify-center gap-2">
+        <img src="/logo.png" alt="PharmaSky Logo" className="h-20 md:h-24 w-auto object-contain drop-shadow-lg" />
+        <h1 className="text-xl md:text-2xl font-bold text-slate-200 tracking-wide text-center">حاسبة أرباح وساطة التمويل</h1>
+      </div>
+
       <div className="max-w-4xl w-full grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Input Form */}
         <div className="bg-slate-800/70 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl">
