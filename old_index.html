@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حاسبة أرباح الوسيط المالي</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap');
+
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --secondary: #10b981;
+            --bg-color: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.15) 0px, transparent 50%);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        h2 span {
+            color: var(--primary);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrapper span {
+            position: absolute;
+            left: 1rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        input {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border-color);
+            color: #fff;
+            padding: 0.75rem 1rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+        
+        .input-wrapper.has-icon input {
+            padding-left: 2.5rem;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+
+        /* Results section */
+        .results-card {
+            background: linear-gradient(145deg, rgba(99, 102, 241, 0.1) 0%, rgba(30, 41, 59, 0.8) 100%);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .result-item {
+            padding: 1.25rem 0;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-item .label {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .result-item .value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .result-item.highlight {
+            margin-top: auto;
+            background: linear-gradient(135deg, var(--primary) 0%, #818cf8 100%);
+            margin: 1rem -2rem -2rem -2rem;
+            padding: 2rem;
+            border-radius: 0 0 24px 24px;
+            box-shadow: 0 -10px 30px rgba(99, 102, 241, 0.2);
+        }
+
+        .result-item.highlight .label {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+        }
+
+        .result-item.highlight .value {
+            font-size: 2rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        /* Formatting numbers */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Input Form -->
+        <div class="card">
+            <h2><span><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span> مدخلات الحساب</h2>
+            
+            <div class="form-group">
+                <label>إجمالي البيع (بالملايين)</label>
+                <div class="input-wrapper has-icon">
+                    <span>مليون</span>
+                    <input type="number" id="publicPriceMillions" value="1" step="0.1" oninput="calculate()">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>نسبة خصم المخزن</label>
+                <div class="input-wrapper has-icon">
+                    <span>%</span>
+                    <input type="number" id="warehouseDiscount" value="35" oninput="calculate()">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>نسبة ربح الوسيط من سعر الجمهور</label>
+                <div class="input-wrapper has-icon">
+                    <span>%</span>
+                    <input type="number" id="middlemanPercent" value="2" oninput="calculate()">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>نسبة شركة التمويل (شهرياً)</label>
+                <div class="input-wrapper has-icon">
+                    <span>%</span>
+                    <input type="number" id="financePercent" value="2" oninput="calculate()">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>مدة التمويل (بالشهور)</label>
+                <div class="input-wrapper has-icon">
+                    <span>شهر</span>
+                    <input type="number" id="months" value="1" oninput="calculate()">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>عمولات بيع (لشركة التمويل)</label>
+                <div class="input-wrapper has-icon">
+                    <span>%</span>
+                    <input type="number" id="salesCommission" value="0.5" step="0.1" oninput="calculate()">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>مصاريف تحويل</label>
+                <div class="input-wrapper has-icon">
+                    <span>%</span>
+                    <input type="number" id="transferFee" value="0.01" step="0.01" oninput="calculate()">
+                </div>
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div class="card results-card">
+            <h2><span><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></span> ملخص العمليات</h2>
+
+            <div class="result-item">
+                <span class="label">تكلفة البضاعة (بعد خصم المخزن)</span>
+                <span class="value" id="resCost">0</span>
+            </div>
+
+            <div class="result-item">
+                <span class="label">المبلغ المدفوع من شركة التمويل</span>
+                <span class="value" id="resFinancePaid">0</span>
+            </div>
+
+            <div class="result-item">
+                <span class="label">المبلغ المستحق لشركة التمويل</span>
+                <span class="value" id="resFinanceDue">0</span>
+            </div>
+
+            <div class="result-item">
+                <span class="label">المبلغ المحصل من المخزن</span>
+                <span class="value" id="resCollected">0</span>
+            </div>
+
+            <div class="result-item">
+                <span class="label">إجمالي عمولات البيع</span>
+                <span class="value" id="resSalesCommission" style="color: #ef4444;">0</span>
+            </div>
+
+            <div class="result-item">
+                <span class="label">إجمالي مصاريف التحويل</span>
+                <span class="value" id="resTransferFee" style="color: #ef4444;">0</span>
+            </div>
+
+            <div class="result-item highlight">
+                <span class="label">صافي ربح الوسيط</span>
+                <span class="value" id="resProfit">0</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function formatMoney(num) {
+            return new Intl.NumberFormat('ar-EG', { style: 'currency', currency: 'EGP' }).format(num);
+        }
+
+        function calculate() {
+            // Get inputs
+            const publicPrice = (parseFloat(document.getElementById('publicPriceMillions').value) || 0) * 1000000;
+            const warehouseDiscount = parseFloat(document.getElementById('warehouseDiscount').value) || 0;
+            const middlemanPercent = parseFloat(document.getElementById('middlemanPercent').value) || 0;
+            const financePercent = parseFloat(document.getElementById('financePercent').value) || 0;
+            const months = parseFloat(document.getElementById('months').value) || 0;
+            const salesCommissionPercent = parseFloat(document.getElementById('salesCommission').value) || 0;
+            const transferFeePercent = parseFloat(document.getElementById('transferFee').value) || 0;
+
+            // 1. Cost of goods after warehouse discount
+            // e.g. 1,000,000 - 35% = 650,000
+            const costOfGoods = publicPrice * (1 - (warehouseDiscount / 100));
+
+            // 2. Amount paid by finance company (same as cost of goods)
+            const financePaid = costOfGoods;
+
+            // 3. Amount due to finance company
+            // e.g. 650,000 + (650,000 * 2% * 1 month) = 663,000
+            const financeInterest = financePaid * (financePercent / 100) * months;
+            const financeDue = financePaid + financeInterest;
+
+            // 4. Amount collected from warehouse by middleman
+            // Middleman adds their percentage of PUBLIC PRICE to the cost
+            // e.g. 650,000 + (1,000,000 * 2%) = 670,000
+            const middlemanTake = publicPrice * (middlemanPercent / 100);
+            const collectedFromWarehouse = costOfGoods + middlemanTake;
+
+            // Calculate extra fees (calculated from the financed amount)
+            const salesCommissionAmt = financePaid * (salesCommissionPercent / 100);
+            const transferFeeAmt = financePaid * (transferFeePercent / 100);
+
+            // 5. Net Profit for Middleman
+            const netProfit = collectedFromWarehouse - financeDue - salesCommissionAmt - transferFeeAmt;
+
+            // Update UI
+            document.getElementById('resCost').textContent = formatMoney(costOfGoods);
+            document.getElementById('resFinancePaid').textContent = formatMoney(financePaid);
+            document.getElementById('resFinanceDue').textContent = formatMoney(financeDue);
+            document.getElementById('resCollected').textContent = formatMoney(collectedFromWarehouse);
+            
+            document.getElementById('resSalesCommission').textContent = "-" + formatMoney(salesCommissionAmt);
+            document.getElementById('resTransferFee').textContent = "-" + formatMoney(transferFeeAmt);
+            
+            document.getElementById('resProfit').textContent = formatMoney(netProfit);
+        }
+
+        // Initial calculation on load
+        calculate();
+    </script>
+</body>
+</html>
