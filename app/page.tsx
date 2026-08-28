@@ -7,6 +7,7 @@ export default function ProfitCalculator() {
     warehouseDiscount: 35,
     middlemanPercent: 2,
     financePercent: 2,
+    creditDays: 30,
     salesCommission: 0.5,
     transferFee: 0,
   });
@@ -18,6 +19,7 @@ export default function ProfitCalculator() {
     collectedFromWarehouse: 0,
     salesCommissionAmt: 0,
     transferFeeAmt: 0,
+    annualInterestRate: 0,
     netProfit: 0,
   });
 
@@ -42,6 +44,7 @@ export default function ProfitCalculator() {
     const warehouseDiscount = parseFloat(String(inputs.warehouseDiscount)) || 0;
     const middlemanPercent = parseFloat(String(inputs.middlemanPercent)) || 0;
     const financePercent = parseFloat(String(inputs.financePercent)) || 0;
+    const creditDays = parseFloat(String(inputs.creditDays)) || 0;
     const salesCommission = parseFloat(String(inputs.salesCommission)) || 0;
     const transferFee = parseFloat(String(inputs.transferFee)) || 0;
 
@@ -53,11 +56,14 @@ export default function ProfitCalculator() {
     // 2. Amount paid by finance company
     const financePaid = costOfGoods;
     
-    // 3. Amount due to finance company (1 month duration)
+    // 3. Amount due to finance company (based on finance % for the credit duration)
     const financeInterest = financePaid * (financePercent / 100);
     const financeDue = financePaid + financeInterest;
     
-    // 4. Amount collected from warehouse
+    // 4. Annualized interest rate calculation: (financePercent / creditDays) * 365
+    const annualInterestRate = creditDays > 0 ? (financePercent / creditDays) * 365 : 0;
+
+    // 5. Amount collected from warehouse
     const middlemanTake = publicPrice * (middlemanPercent / 100);
     const collectedFromWarehouse = costOfGoods + middlemanTake;
     
@@ -65,7 +71,7 @@ export default function ProfitCalculator() {
     const salesCommissionAmt = financePaid * (salesCommission / 100);
     const transferFeeAmt = financePaid * (transferFee / 100);
     
-    // 5. Net Profit
+    // 6. Net Profit
     const netProfit = collectedFromWarehouse - financeDue - salesCommissionAmt - transferFeeAmt;
 
     setResults({
@@ -75,6 +81,7 @@ export default function ProfitCalculator() {
       collectedFromWarehouse,
       salesCommissionAmt,
       transferFeeAmt,
+      annualInterestRate,
       netProfit,
     });
   }, [inputs]);
@@ -172,7 +179,7 @@ export default function ProfitCalculator() {
 
               {/* Field 4 */}
               <div className="form-group">
-                <label className="block mb-1.5 font-medium text-slate-300 text-xs sm:text-sm">نسبة شركة التمويل (شهرياً)</label>
+                <label className="block mb-1.5 font-medium text-slate-300 text-xs sm:text-sm">نسبة شركة التمويل</label>
                 <div className="relative flex items-center">
                   <input
                     type="number"
@@ -187,7 +194,24 @@ export default function ProfitCalculator() {
                 </div>
               </div>
 
-              {/* Field 5 */}
+              {/* Field 5 (Credit Days) */}
+              <div className="form-group">
+                <label className="block mb-1.5 font-medium text-slate-300 text-xs sm:text-sm">مدة الأجل (بالأيام)</label>
+                <div className="relative flex items-center">
+                  <input
+                    type="number"
+                    name="creditDays"
+                    value={inputs.creditDays}
+                    onChange={handleInputChange}
+                    onFocus={handleFocus}
+                    step="1"
+                    className="w-full bg-slate-950/70 border border-slate-800 text-teal-300 font-semibold p-3.5 pl-16 rounded-xl outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 text-base transition-all"
+                  />
+                  <span className="absolute left-3.5 text-xs font-semibold text-slate-400 bg-slate-800/80 px-2.5 py-1 rounded-lg">يوم</span>
+                </div>
+              </div>
+
+              {/* Field 6 */}
               <div className="form-group">
                 <label className="block mb-1.5 font-medium text-slate-300 text-xs sm:text-sm">عمولات بيع (لشركة التمويل)</label>
                 <div className="relative flex items-center">
@@ -204,7 +228,7 @@ export default function ProfitCalculator() {
                 </div>
               </div>
 
-              {/* Field 6 */}
+              {/* Field 7 */}
               <div className="form-group">
                 <label className="block mb-1.5 font-medium text-slate-300 text-xs sm:text-sm">مصاريف تحويل</label>
                 <div className="relative flex items-center">
@@ -253,6 +277,12 @@ export default function ProfitCalculator() {
             <div className="p-3.5 rounded-2xl bg-slate-950/40 border border-slate-800/60 flex justify-between items-center gap-2">
               <span className="text-xs sm:text-sm text-slate-400 font-medium">المستحق لشركة التمويل</span>
               <span className="text-sm sm:text-base font-bold text-slate-100">{formatMoney(results.financeDue)}</span>
+            </div>
+
+            {/* Annualized Interest Rate Badge */}
+            <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex justify-between items-center gap-2">
+              <span className="text-xs sm:text-sm text-amber-200/90 font-medium">الفائدة السنوية المكافئة</span>
+              <span className="text-sm sm:text-base font-extrabold text-amber-400">{results.annualInterestRate.toFixed(2)}%</span>
             </div>
 
             <div className="p-3.5 rounded-2xl bg-slate-950/40 border border-slate-800/60 flex justify-between items-center gap-2">
