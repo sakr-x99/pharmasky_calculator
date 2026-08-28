@@ -7,7 +7,6 @@ export default function ProfitCalculator() {
     warehouseDiscount: 35,
     middlemanPercent: 2,
     financePercent: 2,
-    months: 1,
     salesCommission: 0.5,
     transferFee: 0,
   });
@@ -44,7 +43,7 @@ export default function ProfitCalculator() {
     const financePaid = costOfGoods;
     
     // 3. Amount due to finance company
-    const financeInterest = financePaid * (inputs.financePercent / 100) * inputs.months;
+    const financeInterest = financePaid * (inputs.financePercent / 100);
     const financeDue = financePaid + financeInterest;
     
     // 4. Amount collected from warehouse
@@ -111,14 +110,6 @@ export default function ProfitCalculator() {
               <div className="relative flex items-center">
                 <span className="absolute left-4 text-slate-400 font-medium">%</span>
                 <input type="number" name="financePercent" value={inputs.financePercent} onChange={handleInputChange} className="w-full bg-slate-900/60 border border-white/10 text-white p-3 pl-14 rounded-xl outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all" />
-              </div>
-            </div>
-
-            <div className="form-group">
-              <label className="block mb-2 font-medium text-slate-400 text-sm">مدة التمويل (بالشهور)</label>
-              <div className="relative flex items-center">
-                <span className="absolute left-4 text-slate-400 font-medium">شهر</span>
-                <input type="number" name="months" value={inputs.months} onChange={handleInputChange} className="w-full bg-slate-900/60 border border-white/10 text-white p-3 pl-14 rounded-xl outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all" />
               </div>
             </div>
 
